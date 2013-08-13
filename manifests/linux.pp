@@ -7,10 +7,10 @@ class nisclient::linux {
   $service_name = $nisclient::service_name
 
   case $::osfamily {
-    /redhat|suse/: {
+    /RedHat|Suse/: {
       $package_name = 'ypbind'
     }
-    /debian/: {
+    /Debian/: {
       $package_name = 'nis'
     }
     default: {
@@ -25,14 +25,14 @@ class nisclient::linux {
 
   file { '/etc/yp.conf':
     ensure  => present,
-    owner   => root,
-    group   => root,
-    mode    => 0644,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
     content => "domain ${domainname} server 127.0.0.1\n",
     require => Package['nis_package'],
     notify  => Exec['ypdomainname'],
   }
-    
+
   exec { 'ypdomainname':
     command     => "/bin/ypdomainname ${domainname}",
     refreshonly => true,
@@ -51,9 +51,9 @@ class nisclient::linux {
       path    => '/bin',
       unless  => "grep ^NISDOMAIN=${domainname} /etc/sysconfig/network",
       onlyif  => 'grep ^NISDOMAIN /etc/sysconfig/network',
-    }   
-  } 
-  elsif $::osfamily =~ /suse|debian/ {
+    }
+  }
+  elsif $::osfamily =~ /Suse|Debian/ {
     file { '/etc/defaultdomain':
       ensure  => present,
       owner   => root,
@@ -62,8 +62,8 @@ class nisclient::linux {
       content => template('nisclient/defaultdomain.erb'),
     }
   }
-  
-  if $::osfamily =~ /redhat|suse/ {
+
+  if $::osfamily =~ /RedHat|Suse/ {
     service { 'rpcbind':
       ensure => running,
       enable => true,
@@ -77,7 +77,7 @@ class nisclient::linux {
     $service_enable = true
   }
 
-  service { 'nis_service'
+  service { 'nis_service':
     ensure => $service_ensure,
     enable => $service_enable,
     name   => $service_name,

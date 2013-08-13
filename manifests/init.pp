@@ -8,7 +8,7 @@
 #
 # service_ensure
 # --------------
-# ensure attribute for NIS client service 
+# ensure attribute for NIS client service
 #
 # - *Default*: running
 #
@@ -36,5 +36,5 @@ class nisclient(
       fail("${module_name} is only supported on Linux and Solaris. Not on ${::kernel}")
     }
   }
-  
+
 }
