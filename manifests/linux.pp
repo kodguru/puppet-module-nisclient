@@ -3,26 +3,42 @@
 class nisclient::linux {
 
   $domainname = $nisclient::domainname
+  $server = $nisclient::server
+  $package_ensure = $nisclient::package_ensure
+  $package_name = $nisclient::package_name
   $service_ensure = $nisclient::service_ensure
   $service_name = $nisclient::service_name
 
-  include rpcbind
+  $default_service_name = 'ypbind'
 
   case $::osfamily {
-    /RedHat|Suse/: {
-      $package_name = 'ypbind'
+    'redhat', 'suse': {
+      $default_package_name = 'ypbind'
     }
-    /Debian/: {
-      $package_name = 'nis'
+    'debian': {
+      $default_package_name = 'nis'
     }
     default: {
       fail("Module ${module_name} is not supported on osfamily <${::osfamily}>")
     }
   }
 
+  include rpcbind
+
+  if $service_name == undef {
+    $my_service_name = $default_service_name
+  } else {
+    $my_service_name = $service_name
+  }
+  if $package_name == undef {
+    $my_package_name = $default_package_name
+  } else {
+    $my_package_name = $package_name
+  }
+
   package { 'nis_package':
     ensure => installed,
-    name   => $package_name,
+    name   => $my_package_name,
   }
 
   file { '/etc/yp.conf':
@@ -30,7 +46,7 @@ class nisclient::linux {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => "domain ${domainname} server 127.0.0.1\n",
+    content => "domain ${domainname} server ${server}\n",
     require => Package['nis_package'],
     notify  => Exec['ypdomainname'],
   }
@@ -74,7 +90,7 @@ class nisclient::linux {
   service { 'nis_service':
     ensure => $service_ensure,
     enable => $service_enable,
-    name   => $service_name,
+    name   => $my_service_name,
   }
 
 }

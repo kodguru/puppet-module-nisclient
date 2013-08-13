@@ -1,35 +1,19 @@
 # == Class: nisclient
 #
-# This module manages the NIS client
-#
-# === Parameters
-#
-# Document parameters here.
-#
-# service_ensure
-# --------------
-# ensure attribute for NIS client service
-#
-# - *Default*: running
-#
-# domainname
-# --------------
-# NIS domain name
-#
-# - *Default*: example.com
-#
 class nisclient(
-  $service_ensure = 'running',
   $domainname     = 'example.com',
+  $server         = '127.0.0.1',
+  $package_ensure = 'installed',
+  $package_name   = undef,
+  $service_ensure = 'running',
+  $service_name   = undef
 ) {
 
   case $::kernel {
     'linux': {
-      $service_name = 'ypbind'
       include nisclient::linux
     }
     'solaris': {
-      $service_name = 'nis/client'
       include nisclient::solaris
     }
     default: {
