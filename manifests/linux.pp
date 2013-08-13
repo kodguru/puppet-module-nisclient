@@ -6,6 +6,8 @@ class nisclient::linux {
   $service_ensure = $nisclient::service_ensure
   $service_name = $nisclient::service_name
 
+  include rpcbind
+
   case $::osfamily {
     /RedHat|Suse/: {
       $package_name = 'ypbind'
@@ -60,14 +62,6 @@ class nisclient::linux {
       group   => root,
       mode    => 0644,
       content => template('nisclient/defaultdomain.erb'),
-    }
-  }
-
-  if $::osfamily =~ /RedHat|Suse/ {
-    service { 'rpcbind':
-      ensure => running,
-      enable => true,
-      notify => Service['nis_service'],
     }
   }
 

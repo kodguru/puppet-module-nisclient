@@ -7,3 +7,5 @@ summary 'Manage the NIS client'
 description 'Manage the NIS client'
 project_page 'UNKNOWN'
 
+dependency 'ghoneycutt/rpcbind', '>= 0.1.0'
+
