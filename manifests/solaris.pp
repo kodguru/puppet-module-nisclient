@@ -46,11 +46,7 @@ class nisclient::solaris {
 
   exec { 'domainname':
     command     => "domainname ${domainname}",
-    path        => [ '/bin',
-                      '/usr/bin',
-                      '/sbin',
-                      '/usr/sbin',
-                    ],
+    path        => '/bin:/usr/bin:/sbin:/usr/sbin',
     refreshonly => true,
     notify      => Service['nis_service'],
   }

@@ -53,11 +53,7 @@ class nisclient::linux {
 
   exec { 'ypdomainname':
     command     => "ypdomainname ${domainname}",
-    path        => [ '/bin',
-                      '/usr/bin',
-                      '/sbin',
-                      '/usr/sbin',
-                    ],
+    path        => '/bin:/usr/bin:/sbin:/usr/sbin',
     refreshonly => true,
     notify      => Service['nis_service'],
   }
@@ -65,21 +61,13 @@ class nisclient::linux {
   if $::osfamily == 'redhat' {
     exec { 'set_nisdomain':
       command => "echo NISDOMAIN=${domainname} >> /etc/sysconfig/network",
-      path    => [ '/bin',
-                    '/usr/bin',
-                    '/sbin',
-                    '/usr/sbin',
-                  ],
+      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
       unless  => 'grep ^NISDOMAIN /etc/sysconfig/network',
     }
 
     exec { 'change_nisdomain':
       command => "sed -i 's/^NISDOMAIN.*/NISDOMAIN=${domainname}/' /etc/sysconfig/network",
-      path    => [ '/bin',
-                    '/usr/bin',
-                    '/sbin',
-                    '/usr/sbin',
-                  ],
+      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
       unless  => "grep ^NISDOMAIN=${domainname} /etc/sysconfig/network",
       onlyif  => 'grep ^NISDOMAIN /etc/sysconfig/network',
     }
