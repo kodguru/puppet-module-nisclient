@@ -13,7 +13,8 @@ This module has been tested to work on the following systems with Puppet v3.
 
  * EL 5
  * EL 6
- * SLES 11
+ * Suse 11
+ * Solaris 10
  * Ubuntu 12.04 LTS
 
 ===
@@ -24,13 +25,13 @@ domainname
 ----------
 NIS domain name
 
-- *Default*: example.com
+- *Default*: value of `domain` fact
 
 server
 ------
 NIS server hostname or IP
 
-- *Default*: 127.0.0.1
+- *Default*: '127.0.0.1'
 
 package_ensure
 --------------
