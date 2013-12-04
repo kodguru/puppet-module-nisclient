@@ -1,149 +1,500 @@
 require 'spec_helper'
 describe 'nisclient' do
 
-  describe 'when using default values for class' do
-    let :facts do
-      { :domain   => 'example.com',
-        :kernel   => 'Linux',
-        :osfamily => 'RedHat',
+  describe 'on kernel Linux' do
+    context 'with default params on EL 5' do
+      let :facts do
+        { :domain            => 'example.com',
+          :kernel            => 'Linux',
+          :osfamily          => 'RedHat',
+          :lsbmajdistrelease => '5',
+        }
+      end
+
+      it { should_not include_class('rpcbind') }
+
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'installed',
+          'name'   => 'ypbind',
+        })
+      }
+
+      it {
+        should contain_file('/etc/yp.conf').with({
+          'ensure' => 'present',
+          'path'   => '/etc/yp.conf',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+          'require' => 'Package[nis_package]',
+          'notify'  => 'Exec[ypdomainname]',
+        })
+      }
+
+      it { should contain_file('/etc/yp.conf').with_content(/^domain example.com server 127.0.0.1\n$/) }
+
+      it {
+        should contain_exec('ypdomainname').with({
+          'command'     => 'ypdomainname example.com',
+          'path'        => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'refreshonly' => 'true',
+          'notify'      => 'Service[nis_service]',
+        })
+      }
+
+      it {
+        should contain_exec('set_nisdomain').with({
+          'command' => 'echo NISDOMAIN=example.com >> /etc/sysconfig/network',
+          'path'    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'unless'  => 'grep ^NISDOMAIN /etc/sysconfig/network',
+        })
+      }
+
+      it {
+        should contain_exec('change_nisdomain').with({
+          'command' => 'sed -i \'s/^NISDOMAIN.*/NISDOMAIN=example.com/\' /etc/sysconfig/network',
+          'path'    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'unless'  => 'grep ^NISDOMAIN=example.com /etc/sysconfig/network',
+          'onlyif'  => 'grep ^NISDOMAIN /etc/sysconfig/network',
+        })
+      }
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'ypbind',
+          'enable' => 'true',
+        })
       }
     end
 
-    it {
-      should contain_file('/etc/yp.conf').with({
-        'ensure' => 'present',
-        'path'   => '/etc/yp.conf',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0644',
-      })
-      should contain_file('/etc/yp.conf').with_content(
-%{domain example.com server 127.0.0.1\n})
-    }
-    it {
-      should contain_package('nis_package').with({
-        'ensure' => 'installed',
-        'name'   => 'ypbind',
-      })
-    }
+    context 'with default params on EL 6' do
+      let :facts do
+        { :domain            => 'example.com',
+          :kernel            => 'Linux',
+          :osfamily          => 'RedHat',
+          :lsbmajdistrelease => '6',
+        }
+      end
+
+      it { should include_class('rpcbind') }
+
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'installed',
+          'name'   => 'ypbind',
+        })
+      }
+
+      it {
+        should contain_file('/etc/yp.conf').with({
+          'ensure' => 'present',
+          'path'   => '/etc/yp.conf',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+          'require' => 'Package[nis_package]',
+          'notify'  => 'Exec[ypdomainname]',
+        })
+      }
+
+      it { should contain_file('/etc/yp.conf').with_content(/^domain example.com server 127.0.0.1\n$/) }
+
+      it {
+        should contain_exec('ypdomainname').with({
+          'command'     => 'ypdomainname example.com',
+          'path'        => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'refreshonly' => 'true',
+          'notify'      => 'Service[nis_service]',
+        })
+      }
+
+      it {
+        should contain_exec('set_nisdomain').with({
+          'command' => 'echo NISDOMAIN=example.com >> /etc/sysconfig/network',
+          'path'    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'unless'  => 'grep ^NISDOMAIN /etc/sysconfig/network',
+        })
+      }
+
+      it {
+        should contain_exec('change_nisdomain').with({
+          'command' => 'sed -i \'s/^NISDOMAIN.*/NISDOMAIN=example.com/\' /etc/sysconfig/network',
+          'path'    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'unless'  => 'grep ^NISDOMAIN=example.com /etc/sysconfig/network',
+          'onlyif'  => 'grep ^NISDOMAIN /etc/sysconfig/network',
+        })
+      }
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'ypbind',
+          'enable' => 'true',
+        })
+      }
+    end
+
+    context 'with default params on Suse' do
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'Linux',
+          :osfamily => 'Suse',
+        }
+      end
+
+      it { should include_class('rpcbind') }
+
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'installed',
+          'name'   => 'ypbind',
+        })
+      }
+
+      it {
+        should contain_file('/etc/yp.conf').with({
+          'ensure' => 'present',
+          'path'   => '/etc/yp.conf',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+          'require' => 'Package[nis_package]',
+          'notify'  => 'Exec[ypdomainname]',
+        })
+      }
+
+      it { should contain_file('/etc/yp.conf').with_content(/^domain example.com server 127.0.0.1\n$/) }
+
+      it {
+        should contain_exec('ypdomainname').with({
+          'command'     => 'ypdomainname example.com',
+          'path'        => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'refreshonly' => 'true',
+          'notify'      => 'Service[nis_service]',
+        })
+      }
+
+      it {
+        should contain_file('/etc/defaultdomain').with({
+          'ensure' => 'file',
+          'path'   => '/etc/defaultdomain',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+        })
+      }
+
+      it { should contain_file('/etc/defaultdomain').with_content(/^example.com\n$/) }
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'ypbind',
+          'enable' => 'true',
+        })
+      }
+    end
+
+    context 'with defaults params on Ubuntu' do
+      let :facts do
+        {
+          :domain    => 'example.com',
+          :kernel    => 'Linux',
+          :osfamily  => 'Debian',
+          :lsbdistid => 'Ubuntu',
+        }
+      end
+
+      it { should include_class('rpcbind') }
+
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'installed',
+          'name'   => 'nis',
+        })
+      }
+
+      it {
+        should contain_file('/etc/yp.conf').with({
+          'ensure' => 'present',
+          'path'   => '/etc/yp.conf',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+          'require' => 'Package[nis_package]',
+          'notify'  => 'Exec[ypdomainname]',
+        })
+      }
+
+      it { should contain_file('/etc/yp.conf').with_content(/^domain example.com server 127.0.0.1\n$/) }
+
+      it {
+        should contain_exec('ypdomainname').with({
+          'command'     => 'ypdomainname example.com',
+          'path'        => ['/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'refreshonly' => 'true',
+          'notify'      => 'Service[nis_service]',
+        })
+      }
+
+      it {
+        should contain_file('/etc/defaultdomain').with({
+          'ensure' => 'file',
+          'path'   => '/etc/defaultdomain',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+        })
+      }
+
+      it { should contain_file('/etc/defaultdomain').with_content(/^example.com\n$/) }
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'ypbind',
+          'enable' => 'true',
+        })
+      }
+    end
+
+    context 'with defaults params on unsupported osfamily' do
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'Linux',
+          :osfamily => 'Unsupported',
+        }
+      end
+
+      it 'should fail' do
+        expect {
+          should include_class('nisclient')
+        }.to raise_error(Puppet::Error,/nisclient supports osfamilies Debian, RedHat, and Suse on the Linux kernel. Detected osfamily is <Unsupported>./)
+      end
+    end
   end
 
-  describe 'when using default values for class on Suse' do
-    let :facts do
-      {
-        :domain   => 'example.com',
-        :kernel   => 'Linux',
-        :osfamily => 'Suse',
+  describe 'on kernel SunOS' do
+    context 'with defaults params on Solaris' do
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'SunOS',
+          :osfamily => 'Solaris',
+        }
+      end
+
+      it { should_not include_class('rpcbind') }
+
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'installed',
+          'name'   => ['SUNWnisr', 'SUNWnisu' ],
+        })
+      }
+
+      it {
+        should contain_file('/var/yp').with({
+          'ensure' => 'directory',
+          'path'   => '/var/yp',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp/binding').with({
+          'ensure' => 'directory',
+          'path'   => '/var/yp/binding',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp/binding/example.com').with({
+          'ensure' => 'directory',
+          'path'   => '/var/yp/binding/example.com',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp/binding/example.com/ypservers').with({
+          'ensure'  => 'file',
+          'path'    => '/var/yp/binding/example.com/ypservers',
+          'owner'   => 'root',
+          'group'   => 'root',
+          'mode'    => '0644',
+          'require' => 'File[/var/yp/binding/example.com]',
+          'notify'  => 'Exec[domainname]',
+        })
+      }
+
+      it { should contain_file('/var/yp/binding/example.com/ypservers').with_content(/^127.0.0.1\n$/) }
+
+      it {
+        should contain_file('/etc/defaultdomain').with({
+          'ensure' => 'file',
+          'path'   => '/etc/defaultdomain',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+        })
+      }
+
+      it {
+        should contain_exec('domainname').with({
+          'command'     => 'domainname example.com',
+          'path'        => [ '/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'refreshonly' => 'true',
+          'notify'      => 'Service[nis_service]',
+        })
+      }
+
+      it { should contain_file('/etc/defaultdomain').with_content(/^example.com\n$/) }
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'nis/client',
+          'enable' => 'true',
+        })
       }
     end
 
-    it 'should fail' do
-      expect {
-        should include_class('rpcbind')
-      }.to raise_error(Puppet::Error,/rpcbind supports osfamilies Debian and RedHat. Detected osfamily is <Suse>/)
-    end
-  end
+    context 'with server parameter specified on Linux' do
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'Linux',
+          :osfamily => 'RedHat',
+        }
+      end
+      let :params do
+        { :server => '192.168.1.1' }
+      end
 
-  describe 'when using default values for class on Ubuntu' do
-    let :facts do
-      {
-        :domain    => 'example.com',
-        :kernel    => 'Linux',
-        :osfamily  => 'Debian',
-        :lsbdistid => 'Ubuntu',
+      it {
+        should contain_file('/etc/yp.conf').with({
+          'ensure' => 'present',
+          'path'   => '/etc/yp.conf',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+        })
+      }
+
+      it { should contain_file('/etc/yp.conf').with_content(/^domain example.com server 192.168.1.1\n$/) }
+    end
+
+    context 'with server parameter specified on SunOS' do
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'SunOS',
+          :osfamily => 'Solaris',
+        }
+      end
+      let :params do
+        { :server => '192.168.1.1' }
+      end
+
+      it {
+        should contain_file('/var/yp/binding/example.com/ypservers').with({
+          'ensure'  => 'file',
+          'path'    => '/var/yp/binding/example.com/ypservers',
+          'owner'   => 'root',
+          'group'   => 'root',
+          'mode'    => '0644',
+          'require' => 'File[/var/yp/binding/example.com]',
+          'notify'  => 'Exec[domainname]',
+        })
+      }
+
+      it { should contain_file('/var/yp/binding/example.com/ypservers').with_content(/^192.168.1.1\n$/) }
+    end
+
+    context 'with package_ensure parameter specified' do
+      let(:params) { { :package_ensure => 'absent' } }
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'Linux',
+          :osfamily => 'RedHat',
+        }
+      end
+
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'absent',
+          'name'   => 'ypbind',
+        })
       }
     end
 
-    it {
-      should contain_package('nis_package').with({
-        'ensure' => 'installed',
-        'name'   => 'nis',
-      })
-    }
-  end
+    context 'with package_name parameter specified' do
+      let(:params) { { :package_name => 'mynispackage' } }
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'SunOS',
+          :osfamily => 'Solaris',
+        }
+      end
 
-  describe 'with parameter domainname set' do
-    let :facts do
-      {
-        :kernel   => 'Linux',
-        :osfamily => 'RedHat',
-      }
-    end
-    let :params do
-      { :domainname => 'rnd.example.com' }
-    end
-
-    it {
-      should contain_file('/etc/yp.conf').with({
-        'ensure' => 'present',
-        'path'   => '/etc/yp.conf',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0644',
-      })
-      should contain_file('/etc/yp.conf').with_content(
-%{domain rnd.example.com server 127.0.0.1\n})
-    }
-  end
-
-  describe 'with parameter server set' do
-    let :facts do
-      {
-        :domain   => 'example.com',
-        :kernel   => 'Linux',
-        :osfamily => 'RedHat',
-      }
-    end
-    let :params do
-      { :server => '192.168.1.1' }
-    end
-
-    it {
-      should contain_file('/etc/yp.conf').with({
-        'ensure' => 'present',
-        'path'   => '/etc/yp.conf',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0644',
-      })
-      should contain_file('/etc/yp.conf').with_content(
-%{domain example.com server 192.168.1.1\n})
-    }
-  end
-
-  describe 'with parameters server and domainname set on solaris' do
-    let :params do
-      { :server     => 'localhost',
-        :domainname => 'rnd.example.com' }
-    end
-    let :facts do
-      { :domain   => 'example.com',
-        :kernel   => 'SunOS',
-        :osfamily => 'Solaris',
+      it {
+        should contain_package('nis_package').with({
+          'ensure' => 'installed',
+          'name'   => 'mynispackage',
+        })
       }
     end
 
-    it {
-      should contain_file('/var/yp/binding/rnd.example.com/ypservers').with({
-        'ensure' => 'present',
-        'path'   => '/var/yp/binding/rnd.example.com/ypservers',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0644',
-      })
-      should contain_file('/var/yp/binding/rnd.example.com/ypservers').with_content(
-%{localhost\n})
-    }
-    it {
-      should contain_file('/etc/defaultdomain').with({
-        'ensure' => 'present',
-        'path'   => '/etc/defaultdomain',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0644',
-      })
-      should contain_file('/etc/defaultdomain').with_content(
-%{rnd.example.com\n})
-    }
+    context 'with service_ensure parameter specified' do
+      let(:params) { { :service_ensure => 'stopped' } }
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'Linux',
+          :osfamily => 'RedHat',
+        }
+      end
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'stopped',
+          'name'   => 'ypbind',
+          'enable' => 'false',
+        })
+      }
+    end
+
+    context 'with service_name parameter specified' do
+      let(:params) { { :service_name => 'mynisservice' } }
+      let :facts do
+        {
+          :domain   => 'example.com',
+          :kernel   => 'SunOS',
+          :osfamily => 'Solaris',
+        }
+      end
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'mynisservice',
+          'enable' => 'true',
+        })
+      }
+    end
   end
 end
