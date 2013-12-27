@@ -11,7 +11,7 @@ describe 'nisclient' do
         }
       end
 
-      it { should_not include_class('rpcbind') }
+      it { should_not contain_class('rpcbind') }
 
       it {
         should contain_package('nis_package').with({
@@ -78,7 +78,7 @@ describe 'nisclient' do
         }
       end
 
-      it { should include_class('rpcbind') }
+      it { should contain_class('rpcbind') }
 
       it {
         should contain_package('nis_package').with({
@@ -145,7 +145,7 @@ describe 'nisclient' do
         }
       end
 
-      it { should include_class('rpcbind') }
+      it { should contain_class('rpcbind') }
 
       it {
         should contain_package('nis_package').with({
@@ -208,7 +208,7 @@ describe 'nisclient' do
         }
       end
 
-      it { should include_class('rpcbind') }
+      it { should contain_class('rpcbind') }
 
       it {
         should contain_package('nis_package').with({
@@ -272,7 +272,7 @@ describe 'nisclient' do
 
       it 'should fail' do
         expect {
-          should include_class('nisclient')
+          should contain_class('nisclient')
         }.to raise_error(Puppet::Error,/nisclient supports osfamilies Debian, RedHat, and Suse on the Linux kernel. Detected osfamily is <Unsupported>./)
       end
     end
@@ -288,7 +288,7 @@ describe 'nisclient' do
         }
       end
 
-      it { should_not include_class('rpcbind') }
+      it { should_not contain_class('rpcbind') }
 
       it {
         should contain_package('nis_package').with({
