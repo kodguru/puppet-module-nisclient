@@ -8,4 +8,4 @@ description 'Manage the NIS client'
 project_page 'http://github.com/Ericsson/puppet-module-nisclient'
 
 dependency 'ghoneycutt/rpcbind', '>= 1.1.0'
-dependency 'puppetlabs/stdlib', '3.2.x'
+dependency 'puppetlabs/stdlib', '>= 3.2.0'
