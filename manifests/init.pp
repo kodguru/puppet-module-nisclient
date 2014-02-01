@@ -4,9 +4,9 @@ class nisclient(
   $domainname     = $::domain,
   $server         = '127.0.0.1',
   $package_ensure = 'installed',
-  $package_name   = undef,
+  $package_name   = 'USE_DEFAULTS',
   $service_ensure = 'running',
-  $service_name   = undef,
+  $service_name   = 'USE_DEFAULTS',
 ) {
 
   case $::kernel {
@@ -32,14 +32,55 @@ class nisclient(
           fail("nisclient supports osfamilies Debian, RedHat, and Suse on the Linux kernel. Detected osfamily is <${::osfamily}>.")
         }
       }
+    }
+    'SunOS': {
+      $default_package_name = [ 'SUNWnisr',
+                                'SUNWnisu',
+                              ]
+      $default_service_name = 'nis/client'
+    }
+    default: {
+      fail("nisclient is only supported on Linux and Solaris kernels. Detected kernel is <${::kernel}>")
+    }
+  }
 
+  if $service_name == 'USE_DEFAULTS' {
+    $my_service_name = $default_service_name
+  } else {
+    $my_service_name = $service_name
+  }
+
+  if $package_name == 'USE_DEFAULTS' {
+    $my_package_name = $default_package_name
+  } else {
+    $my_package_name = $package_name
+  }
+
+  package { $my_package_name:
+    ensure => $package_ensure,
+  }
+
+  if $service_ensure == 'stopped' {
+    $service_enable = false
+  } else {
+    $service_enable = true
+  }
+
+  service { 'nis_service':
+    ensure => $service_ensure,
+    name   => $my_service_name,
+    enable => $service_enable,
+  }
+
+  case $::kernel {
+    'Linux': {
       file { '/etc/yp.conf':
         ensure  => present,
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
         content => "domain ${domainname} server ${server}\n",
-        require => Package['nis_package'],
+        require => Package[$my_package_name],
         notify  => Exec['ypdomainname'],
       }
 
@@ -87,11 +128,6 @@ class nisclient(
       }
     }
     'SunOS': {
-      $default_package_name = [ 'SUNWnisr',
-                                'SUNWnisu',
-                              ]
-      $default_service_name = 'nis/client'
-
       file { ['/var/yp',
               '/var/yp/binding',
               "/var/yp/binding/${domainname}"]:
@@ -134,33 +170,5 @@ class nisclient(
     default: {
       fail("nisclient is only supported on Linux and Solaris kernels. Detected kernel is <${::kernel}>")
     }
-  }
-
-  if $service_name == undef {
-    $my_service_name = $default_service_name
-  } else {
-    $my_service_name = $service_name
-  }
-  if $package_name == undef {
-    $my_package_name = $default_package_name
-  } else {
-    $my_package_name = $package_name
-  }
-
-  package { 'nis_package':
-    ensure => $package_ensure,
-    name   => $my_package_name,
-  }
-
-  if $service_ensure == 'stopped' {
-    $service_enable = false
-  } else {
-    $service_enable = true
-  }
-
-  service { 'nis_service':
-    ensure => $service_ensure,
-    name   => $my_service_name,
-    enable => $service_enable,
   }
 }

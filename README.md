@@ -9,7 +9,7 @@ Puppet module to manage a NIS client
 
 # Compatability
 
-This module has been tested to work on the following systems with Puppet v3.
+This module has been tested to work on the following systems with Puppet v3 and Ruby 1.8.7, 1.9.3, and 2.0.0.
 
  * EL 5
  * EL 6
@@ -41,9 +41,9 @@ ensure attribute for NIS client package
 
 package_name
 ------------
-name of NIS client package
+String or Array of NIS client package(s). 'USE_DEFAULTS' will use platform specific defaults provided by the module.
 
-- *Default*: undef (OS default)
+- *Default*: 'USE_DEFAULTS'
 
 service_ensure
 --------------
@@ -53,6 +53,6 @@ ensure attribute for NIS client service
 
 service_name
 ------------
-name of NIS client service
+String name of NIS client service. 'USE_DEFAULTS' will use platform specific defaults provided by the module.
 
-- *Default*: undef (OS default)
+- *Default*: 'USE_DEFAULTS'
