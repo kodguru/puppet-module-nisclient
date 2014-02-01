@@ -14,9 +14,8 @@ describe 'nisclient' do
       it { should_not contain_class('rpcbind') }
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('ypbind').with({
           'ensure' => 'installed',
-          'name'   => 'ypbind',
         })
       }
 
@@ -27,7 +26,7 @@ describe 'nisclient' do
           'owner'  => 'root',
           'group'  => 'root',
           'mode'   => '0644',
-          'require' => 'Package[nis_package]',
+          'require' => 'Package[ypbind]',
           'notify'  => 'Exec[ypdomainname]',
         })
       }
@@ -81,9 +80,8 @@ describe 'nisclient' do
       it { should contain_class('rpcbind') }
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('ypbind').with({
           'ensure' => 'installed',
-          'name'   => 'ypbind',
         })
       }
 
@@ -94,7 +92,7 @@ describe 'nisclient' do
           'owner'  => 'root',
           'group'  => 'root',
           'mode'   => '0644',
-          'require' => 'Package[nis_package]',
+          'require' => 'Package[ypbind]',
           'notify'  => 'Exec[ypdomainname]',
         })
       }
@@ -148,9 +146,8 @@ describe 'nisclient' do
       it { should contain_class('rpcbind') }
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('ypbind').with({
           'ensure' => 'installed',
-          'name'   => 'ypbind',
         })
       }
 
@@ -161,7 +158,7 @@ describe 'nisclient' do
           'owner'  => 'root',
           'group'  => 'root',
           'mode'   => '0644',
-          'require' => 'Package[nis_package]',
+          'require' => 'Package[ypbind]',
           'notify'  => 'Exec[ypdomainname]',
         })
       }
@@ -211,9 +208,8 @@ describe 'nisclient' do
       it { should contain_class('rpcbind') }
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('nis').with({
           'ensure' => 'installed',
-          'name'   => 'nis',
         })
       }
 
@@ -224,7 +220,7 @@ describe 'nisclient' do
           'owner'  => 'root',
           'group'  => 'root',
           'mode'   => '0644',
-          'require' => 'Package[nis_package]',
+          'require' => 'Package[nis]',
           'notify'  => 'Exec[ypdomainname]',
         })
       }
@@ -291,9 +287,14 @@ describe 'nisclient' do
       it { should_not contain_class('rpcbind') }
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('SUNWnisr').with({
           'ensure' => 'installed',
-          'name'   => ['SUNWnisr', 'SUNWnisu' ],
+        })
+      }
+
+      it {
+        should contain_package('SUNWnisu').with({
+          'ensure' => 'installed',
         })
       }
 
@@ -434,9 +435,8 @@ describe 'nisclient' do
       end
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('ypbind').with({
           'ensure' => 'absent',
-          'name'   => 'ypbind',
         })
       }
     end
@@ -452,9 +452,8 @@ describe 'nisclient' do
       end
 
       it {
-        should contain_package('nis_package').with({
+        should contain_package('mynispackage').with({
           'ensure' => 'installed',
-          'name'   => 'mynispackage',
         })
       }
     end
