@@ -38,7 +38,7 @@ NIS server hostname or IP
 
 broadcast
 ---------
-On Linux, enable ypbind broadcast mode. If both `broadcast` and `server` options are specified, broadcast mode will be used.
+Boolean. On Linux, enable ypbind broadcast mode. If both `broadcast` and `server` options are specified, broadcast mode will be used.
 
 - *Default*: false
 

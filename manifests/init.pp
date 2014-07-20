@@ -10,7 +10,12 @@ class nisclient(
   $service_name   = 'USE_DEFAULTS',
 ) {
 
-  validate_bool($broadcast)
+  if type($broadcast) == 'String' {
+    $broadcast_real = str2bool($broadcast)
+  } else {
+    $broadcast_real = $broadcast
+  }
+  validate_bool($broadcast_real)
 
   case $::kernel {
     'Linux': {
