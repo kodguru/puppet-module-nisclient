@@ -1,5 +1,5 @@
 name    'ericsson-nisclient'
-version '1.0.0'
+version '1.0.1'
 source 'git://github.com/Ericsson/puppet-module-nisclient.git'
 author 'Ericsson'
 license 'Apache License, Version 2.0'
