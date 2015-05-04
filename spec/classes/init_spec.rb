@@ -275,12 +275,13 @@ describe 'nisclient' do
   end
 
   describe 'on kernel SunOS' do
-    context 'with defaults params on Solaris' do
+    context 'with defaults params on Solaris 5.10' do
       let :facts do
         {
-          :domain   => 'example.com',
-          :kernel   => 'SunOS',
-          :osfamily => 'Solaris',
+          :domain        => 'example.com',
+          :kernel        => 'SunOS',
+          :osfamily      => 'Solaris',
+          :kernelrelease => '5.10',
         }
       end
 
@@ -294,6 +295,98 @@ describe 'nisclient' do
 
       it {
         should contain_package('SUNWnisu').with({
+          'ensure' => 'installed',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp').with({
+          'ensure' => 'directory',
+          'path'   => '/var/yp',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp/binding').with({
+          'ensure' => 'directory',
+          'path'   => '/var/yp/binding',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp/binding/example.com').with({
+          'ensure' => 'directory',
+          'path'   => '/var/yp/binding/example.com',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+        })
+      }
+
+      it {
+        should contain_file('/var/yp/binding/example.com/ypservers').with({
+          'ensure'  => 'file',
+          'path'    => '/var/yp/binding/example.com/ypservers',
+          'owner'   => 'root',
+          'group'   => 'root',
+          'mode'    => '0644',
+          'require' => 'File[/var/yp/binding/example.com]',
+          'notify'  => 'Exec[domainname]',
+        })
+      }
+
+      it { should contain_file('/var/yp/binding/example.com/ypservers').with_content(/^127.0.0.1\n$/) }
+
+      it {
+        should contain_file('/etc/defaultdomain').with({
+          'ensure' => 'file',
+          'path'   => '/etc/defaultdomain',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0644',
+        })
+      }
+
+      it {
+        should contain_exec('domainname').with({
+          'command'     => 'domainname example.com',
+          'path'        => [ '/bin', '/usr/bin', '/sbin', '/usr/sbin'],
+          'refreshonly' => 'true',
+          'notify'      => 'Service[nis_service]',
+        })
+      }
+
+      it { should contain_file('/etc/defaultdomain').with_content(/^example.com\n$/) }
+
+      it {
+        should contain_service('nis_service').with({
+          'ensure' => 'running',
+          'name'   => 'nis/client',
+          'enable' => 'true',
+        })
+      }
+    end
+
+    context 'with defaults params on Solaris 5.11' do
+      let :facts do
+        {
+          :domain        => 'example.com',
+          :kernel        => 'SunOS',
+          :osfamily      => 'Solaris',
+          :kernelrelease => '5.11',
+        }
+      end
+
+      it { should_not contain_class('rpcbind') }
+
+      it {
+        should contain_package('system/network/nis').with({
           'ensure' => 'installed',
         })
       }
