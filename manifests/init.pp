@@ -95,7 +95,7 @@ class nisclient(
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
-        content => template("nisclient/yp.conf.erb"),
+        content => template('nisclient/yp.conf.erb'),
         require => Package[$my_package_name],
         notify  => Exec['ypdomainname'],
       }
