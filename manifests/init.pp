@@ -10,7 +10,7 @@ class nisclient(
   $service_name   = 'USE_DEFAULTS',
 ) {
 
-  if type($broadcast) == 'String' {
+  if type3x($broadcast) == 'String' {
     $broadcast_real = str2bool($broadcast)
   } else {
     $broadcast_real = $broadcast
