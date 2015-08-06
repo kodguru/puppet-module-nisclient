@@ -465,6 +465,24 @@ describe 'nisclient' do
       }
     end
 
+    context 'with defaults params on Solaris 5.12' do
+      let :facts do
+        {
+          :domain        => 'example.com',
+          :kernel        => 'SunOS',
+          :osfamily      => 'Solaris',
+          :kernelrelease => '5.12',
+        }
+      end
+
+      it 'should fail' do
+        expect {
+          should contain_class('nisclient')
+        }.to raise_error(Puppet::Error,/nisclient supports SunOS 5\.10 and 5\.11\. Detected kernelrelease is <5\.12>\./)
+      end
+
+    end
+
     context 'with server parameter specified on Linux' do
       let :facts do
         {
