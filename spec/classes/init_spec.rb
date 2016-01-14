@@ -274,6 +274,61 @@ describe 'nisclient' do
     end
   end
 
+  describe 'with parameter broadcast' do
+    ['true',true].each do |value|
+      context "set to #{value}" do
+        let :facts do
+            { :domain            => 'example.com',
+              :kernel            => 'Linux',
+              :osfamily          => 'RedHat',
+            }
+        end
+
+        let :params do {
+            :broadcast  => value,
+        } end
+
+        it { should contain_file('/etc/yp.conf').with_content(/^domain example\.com broadcast$/) }
+      end
+    end
+
+    ['false',false].each do |value|
+      context "set to #{value}" do
+        let :facts do
+            { :domain            => 'example.com',
+              :kernel            => 'Linux',
+              :osfamily          => 'RedHat',
+            }
+        end
+
+        let :params do {
+            :broadcast  => value,
+        } end
+
+        it { should contain_file('/etc/yp.conf').with_content(/^domain example\.com server 127\.0\.0\.1$/) }
+      end
+    end
+
+    context 'set to an invalid value' do
+      let :facts do
+          { :domain            => 'example.com',
+            :kernel            => 'Linux',
+            :osfamily          => 'RedHat',
+          }
+      end
+
+      let :params do {
+          :broadcast  => 'invalid',
+      } end
+
+      it 'should fail' do
+        expect {
+          should contain_class('nisclient')
+        }.to raise_error(Puppet::Error)
+      end
+    end
+  end
+
   describe 'on kernel SunOS' do
     context 'with defaults params on Solaris 5.10' do
       let :facts do
