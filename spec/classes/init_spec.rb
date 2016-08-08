@@ -21,7 +21,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -87,7 +87,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -153,7 +153,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -215,7 +215,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -281,6 +281,7 @@ describe 'nisclient' do
             { :domain            => 'example.com',
               :kernel            => 'Linux',
               :osfamily          => 'RedHat',
+              :lsbmajdistrelease => '6',
             }
         end
 
@@ -298,6 +299,7 @@ describe 'nisclient' do
             { :domain            => 'example.com',
               :kernel            => 'Linux',
               :osfamily          => 'RedHat',
+              :lsbmajdistrelease => '6',
             }
         end
 
@@ -541,9 +543,10 @@ describe 'nisclient' do
     context 'with server parameter specified on Linux' do
       let :facts do
         {
-          :domain   => 'example.com',
-          :kernel   => 'Linux',
-          :osfamily => 'RedHat',
+          :domain            => 'example.com',
+          :kernel            => 'Linux',
+          :osfamily          => 'RedHat',
+          :lsbmajdistrelease => '6',
         }
       end
       let :params do
@@ -552,7 +555,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -595,9 +598,10 @@ describe 'nisclient' do
       let(:params) { { :package_ensure => 'absent' } }
       let :facts do
         {
-          :domain   => 'example.com',
-          :kernel   => 'Linux',
-          :osfamily => 'RedHat',
+          :domain            => 'example.com',
+          :kernel            => 'Linux',
+          :osfamily          => 'RedHat',
+          :lsbmajdistrelease => '6',
         }
       end
 
@@ -630,9 +634,10 @@ describe 'nisclient' do
       let(:params) { { :service_ensure => 'stopped' } }
       let :facts do
         {
-          :domain   => 'example.com',
-          :kernel   => 'Linux',
-          :osfamily => 'RedHat',
+          :domain            => 'example.com',
+          :kernel            => 'Linux',
+          :osfamily          => 'RedHat',
+          :lsbmajdistrelease => '6',
         }
       end
 

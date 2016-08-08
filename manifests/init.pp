@@ -25,15 +25,15 @@ class nisclient(
           $default_package_name = 'ypbind'
 
           if $::lsbmajdistrelease == '6' {
-            include rpcbind
+            include ::rpcbind
           }
         }
         'Suse': {
-          include rpcbind
+          include ::rpcbind
           $default_package_name = 'ypbind'
         }
         'Debian': {
-          include rpcbind
+          include ::rpcbind
           $default_package_name = 'nis'
         }
         default: {
@@ -91,7 +91,7 @@ class nisclient(
   case $::kernel {
     'Linux': {
       file { '/etc/yp.conf':
-        ensure  => present,
+        ensure  => 'file',
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
@@ -139,7 +139,7 @@ class nisclient(
           owner   => 'root',
           group   => 'root',
           mode    => '0644',
-          content => "${domainname}\n"
+          content => "${domainname}\n",
         }
       }
     }
