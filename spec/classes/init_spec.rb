@@ -21,7 +21,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -87,7 +87,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -153,7 +153,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -215,7 +215,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
@@ -552,7 +552,7 @@ describe 'nisclient' do
 
       it {
         should contain_file('/etc/yp.conf').with({
-          'ensure' => 'present',
+          'ensure' => 'file',
           'path'   => '/etc/yp.conf',
           'owner'  => 'root',
           'group'  => 'root',
