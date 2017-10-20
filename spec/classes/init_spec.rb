@@ -198,10 +198,11 @@ describe 'nisclient' do
     context 'with defaults params on Ubuntu' do
       let :facts do
         {
-          :domain    => 'example.com',
-          :kernel    => 'Linux',
-          :osfamily  => 'Debian',
-          :lsbdistid => 'Ubuntu',
+          :domain                 => 'example.com',
+          :kernel                 => 'Linux',
+          :lsbdistid              => 'Ubuntu',
+          :osfamily               => 'Debian',
+          :operatingsystemrelease => '14.04',
         }
       end
 
@@ -259,6 +260,10 @@ describe 'nisclient' do
       context 'with version 16.04' do
         let :facts do
           {
+            :domain                 => 'example.com',
+            :kernel                 => 'Linux',
+            :lsbdistid              => 'Ubuntu',
+            :osfamily               => 'Debian',
             :operatingsystemrelease => '16.04',
           }
         end
@@ -269,6 +274,7 @@ describe 'nisclient' do
             'name'   => 'nis',
             'enable' => 'true',
           })
+        }
       end
     end
 
