@@ -198,10 +198,11 @@ describe 'nisclient' do
     context 'with defaults params on Ubuntu' do
       let :facts do
         {
-          :domain    => 'example.com',
-          :kernel    => 'Linux',
-          :osfamily  => 'Debian',
-          :lsbdistid => 'Ubuntu',
+          :domain                 => 'example.com',
+          :kernel                 => 'Linux',
+          :lsbdistid              => 'Ubuntu',
+          :osfamily               => 'Debian',
+          :operatingsystemrelease => '14.04',
         }
       end
 
@@ -255,6 +256,26 @@ describe 'nisclient' do
           'enable' => 'true',
         })
       }
+
+      context 'with version 16.04' do
+        let :facts do
+          {
+            :domain                 => 'example.com',
+            :kernel                 => 'Linux',
+            :lsbdistid              => 'Ubuntu',
+            :osfamily               => 'Debian',
+            :operatingsystemrelease => '16.04',
+          }
+        end
+
+        it {
+          should contain_service('nis_service').with({
+            'ensure' => 'running',
+            'name'   => 'nis',
+            'enable' => 'true',
+          })
+        }
+      end
     end
 
     context 'with defaults params on unsupported osfamily' do
