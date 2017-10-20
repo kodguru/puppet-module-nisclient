@@ -25,9 +25,8 @@ class nisclient(
           $default_service_name = 'ypbind'
 
           case $::lsbmajdistrelease {
-            '6', '7': {
-              include ::rpcbind
-            }
+            '6', '7': { include ::rpcbind }
+            default:  { }
           }
         }
         'Suse': {
@@ -39,14 +38,10 @@ class nisclient(
           include ::rpcbind
           $default_package_name = 'nis'
           case $::operatingsystemrelease {
-            '16.04': {
-              $default_service_name = 'nis'
-            }
-            default: {
-              # Legacy behavior until Ubuntu 14.04.
-              # Unknown status on non-Ubuntu Debian, so keeping default as it was.
-              $default_service_name = 'ypbind'
-            }
+            '16.04': { $default_service_name = 'nis' }
+            # Legacy behavior until Ubuntu 14.04.
+            # Unknown status on non-Ubuntu Debian, so keeping default as it was.
+            default: { $default_service_name = 'ypbind' }
           }
         }
         default: {
@@ -56,15 +51,9 @@ class nisclient(
     }
     'SunOS': {
       case $::kernelrelease {
-        '5.10': {
-          $default_package_name = [ 'SUNWnisr', 'SUNWnisu', ]
-        }
-        '5.11': {
-          $default_package_name = [ 'system/network/nis', ]
-        }
-        default: {
-          fail("nisclient supports SunOS 5.10 and 5.11. Detected kernelrelease is <${::kernelrelease}>.")
-        }
+        '5.10':  { $default_package_name = [ 'SUNWnisr', 'SUNWnisu', ] }
+        '5.11':  { $default_package_name = [ 'system/network/nis', ] }
+        default: { fail("nisclient supports SunOS 5.10 and 5.11. Detected kernelrelease is <${::kernelrelease}>.") }
       }
       $default_service_name = 'nis/client'
     }
