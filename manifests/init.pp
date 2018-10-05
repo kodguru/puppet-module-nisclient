@@ -38,7 +38,7 @@ class nisclient(
           include ::rpcbind
           $default_package_name = 'nis'
           case $::operatingsystemrelease {
-            '16.04': { $default_service_name = 'nis' }
+            '16.04', '18.04': { $default_service_name = 'nis' }
             # Legacy behavior until Ubuntu 14.04.
             # Unknown status on non-Ubuntu Debian, so keeping default as it was.
             default: { $default_service_name = 'ypbind' }
